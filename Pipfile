@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+email-validator = "*"
+adk = "*"
+jinja2 = "*"
+faster-whisper = "*"
+fastapi = "*"
+uvicorn = "*"
+ffmpeg-python = "*"
+google-cloud-firestore = "*"
+google-cloud-storage = "*"
+google-cloud-aiplatform = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
+python_full_version = "3.13.7"
