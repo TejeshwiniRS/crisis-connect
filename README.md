@@ -1,54 +1,136 @@
 # 🚨 CrisisConnect — AI-Powered Disaster Response Coordination
 
-CrisisConnect is a **serverless AI system** built to connect **disaster incidents** with the **right NGOs and resources** in real time.  
-It combines **AI Studio-generated agents**, **Cloud Run services**, and **Firestore** to orchestrate emergency response efficiently.
+CrisisConnect is a **serverless AI system** that connects **disaster incidents** with the **right NGOs and resources** in real time.  
+It leverages **Google AI Studio**, **Agent Development Kit (ADK)**, and **Cloud Run** to orchestrate an intelligent, multi-agent response network.
 
 ---
 
 ## 🌍 Inspiration
 
-During crises, responders often face information overload and fragmented communication between victims, NGOs, and authorities.  
-We wanted to build a **scalable, data-driven coordination layer** that automatically matches urgent needs to the most capable responders — all powered by Google Cloud’s serverless stack.
+During emergencies, critical time is lost because information from the field is unstructured, delayed, or poorly routed.  
+We built CrisisConnect to act as a **real-time coordination hub**, turning fragmented crisis data into actionable insight — all powered by scalable, serverless AI infrastructure.
 
 ---
 
 ## 💡 What It Does
 
-CrisisConnect ingests live reports (voice, text, or data feeds) and uses two cooperative AI agents:
+CrisisConnect deploys a set of cooperating agents that handle data ingestion, matching, summarization, and reporting.
 
-| Agent | Role |
-|-------|------|
-| 🎙️ **SpeechTranscriberAgent** | Converts multilingual audio calls from field responders into structured incident reports. |
-| 🧭 **ResourcePlannerAgent** | Scans new incidents in Firestore and automatically matches each need (e.g., “medical aid”, “food supply”) to the best-fit NGOs or relief teams. |
+| Agent / Job | Role |
+|--------------|------|
+| 🛰️ **DataScoutAgent** | Collects and preprocesses real-world crisis data (incident reports, NGO updates, resource availability) and stores it in Firestore. |
+| 🧭 **ResourcePlannerAgent** | Analyzes new incidents and matches each reported need (e.g., “medical aid”, “water supply”) with NGOs capable of responding. |
+| 🧠 **CrisisSummarizerAgent** | Uses Gemini models to summarize ongoing crises, identify emerging trends, and generate concise daily situation briefs. |
+| 📊 **ReportWriter** | A background Cloud Run job that aggregates daily incident and NGO activity into structured CSV or JSON reports for analytics dashboards. |
 
-A **web dashboard** (built with AI Studio) visualizes ongoing incidents, matched NGOs, and resource flow — enabling responders to make faster, data-backed decisions.
+A **web dashboard** (built via AI Studio) visualizes active incidents, matches, summaries, and performance metrics for field coordinators.
 
 ---
 
 ## 🏗️ How We Built It
 
-1. **AI Studio (Google AI Studio):**
-   - Used to generate initial agent scaffolds (`SpeechTranscriberAgent`, `ResourcePlannerAgent`).
-   - Leveraged the *Deploy to Run* feature for direct deployment to Cloud Run.
+1. **AI Studio**
+   - Generated initial agent scaffolds for `DataScoutAgent`, `ResourcePlannerAgent`, and `CrisisSummarizerAgent`.
+   - Used the *Deploy to Run* workflow to push directly to Cloud Run.
 
-2. **Agent Development Kit (ADK):**
-   - Implemented both agents using `adk.Agent` subclassing.
-   - `SpeechTranscriberAgent` uses Gemini API for transcription and summarization.
-   - `ResourcePlannerAgent` queries Firestore to match NGOs with needs.
+2. **Agent Development Kit (ADK)**
+   - Implemented agents as subclasses of `adk.Agent`.
+   - Defined structured `plan()` and `act()` methods for coordination.
+   - Connected to Firestore for persistence.
 
-3. **Cloud Run Services:**
-   - Each agent is containerized and deployed independently:
-     - `speech-transcriber-gpu` (GPU-accelerated transcription)
-     - `resourceplanner` (matching + report writer)
-     - `dashboard` (frontend for visualization)
+3. **Google Cloud Run**
+   - Each agent and the background job runs as an independent containerized service:
+     - `datascout`
+     - `resourceplanner`
+     - `crisissummarizer`
+     - `reportwriter`
+     - `dashboard`
 
-4. **Cloud Firestore:**
-   - Stores incidents (`incidents`), NGO records (`ngos`), and match results (`matches`).
+4. **Firestore**
+   - Collections: `incidents`, `ngos`, `matches`, `summaries`.
 
-5. **Cloud Storage + Pub/Sub:**
-   - Audio files are uploaded to Cloud Storage and trigger Pub/Sub events for automatic processing.
+5. **Cloud Storage + Pub/Sub**
+   - Handles asynchronous triggers and data ingestion pipelines.
 
-6. **Cloud Build & Artifact Registry:**
-   - CI/CD pipeline for building and pushing Docker images.
+6. **Cloud Build + Artifact Registry**
+   - Automates build and deployment via CI/CD.
 
+
+## 🧪 API Usage (cURL Commands)
+
+ 1. **Ingest Sample Crisis Reports**
+    - Adds structured crisis text data into Firestore through **DataScoutAgent**.
+```bash
+   curl -X POST "$DATASCOUT_URL/invoke/ingest_from_feed" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "items": [
+             "Severe flooding has hit the city of Austin, hundreds displaced and in need of food and shelter.",
+             "Wildfires near Denver are spreading rapidly, urgent need for medical supplies and volunteer firefighters."
+           ]
+         }' | jq .
+```
+ 2. **Summarize a Single Crisis Text**
+    - Summarizes any given crisis report using Gemini via **DataScoutAgent**.
+```bash
+   curl -X POST "$DATASCOUT_URL/invoke/summarize_text" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "text": "Heavy rainfall has caused flooding in Austin; hundreds need shelter and food assistance."
+         }' | jq .
+```
+
+ 3. **Fetch and Ingest Real-World Feeds**
+    - Pulls live disaster data (e.g., ReliefWeb, APIs) and updates Firestore.
+```bash
+   curl -X POST "$DATASCOUT_URL/invoke/fetch_and_ingest" \
+     -H "Content-Type: application/json" \
+     -d '{}'
+```
+ 
+ 4. **Plan and Match Unresolved Incidents**
+    - Runs ResourcePlannerAgent to match incidents with NGOs in Firestore.
+```bash
+   curl -s -X POST "$RESOURCEPLANNER_URL/invoke/plan_unmatched_incidents" \
+     -H "Content-Type: application/json" \
+     -d '{"limit": 50}' | jq .
+```
+
+ 5. **Execute the ReportWriter Job**
+    - Triggers the background job to generate analytics and summary reports (can run only when you have access to the project).
+```bash
+   gcloud run jobs execute reportwriter --region "$REGION"
+```
+
+ 6. **Generate a Crisis Summary Report**
+    - Produces summarized overviews from multiple crisis incidents.
+```bash
+   cat > sample_request.json <<'JSON'
+   {
+     "reports": [
+       {"location": "Denver, CO", "type": "Wildfire", "severity": 4, "status": "Active", "needs": "Medical supplies"},
+       {"location": "Minneapolis, MN", "type": "Flood", "severity": 3, "status": "Stabilizing", "needs": "Food and shelter"}
+     ]
+   }
+   JSON
+   
+   curl -s -X POST "$CRISIS_URL/summarize" \
+     -H "Content-Type: application/json" \
+     -d @sample_request.json
+
+```
+
+ 7. **Retrieve Latest Summary**
+    - Fetches the most recent summary generated by CrisisSummarizerAgent.
+```bash
+   curl -s "$CRISIS_URL/summarize_latest"
+```
+
+ 8. **Plan Limited Incident Set**
+    - Runs matching for a small subset of incidents (testing mode).
+```bash
+   curl -s -X POST "$URL/invoke/plan_unmatched_incidents" \
+     -H "Content-Type: application/json" \
+     -d '{"limit": 5}' | jq .
+```
 
