@@ -4,3 +4,6 @@ adk
 fastapi
 uvicorn
 email-validator
+adk
+requests
+feedparser

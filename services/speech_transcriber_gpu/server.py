@@ -4,7 +4,8 @@ from google.cloud import firestore
 import tempfile, os
 
 app = FastAPI()
-db = firestore.Client(database="crisisconnect")
+db = firestore.Client(database=os.getenv("GOOGLE_CLOUD_FIRESTORE_DB", "crisisconnect"))
+
 
 MODEL_SIZE = os.getenv("MODEL_SIZE", "large-v3")
 DEVICE     = "cuda" if os.getenv("CUDA_VISIBLE_DEVICES", "") != "" else "cpu"

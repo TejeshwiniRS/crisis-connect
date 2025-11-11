@@ -1,0 +1,32 @@
+{
+  "reports": [
+    {
+      "location": "Boulder, CO",
+      "type": "Flood",
+      "severity": 4,
+      "status": "Active",
+      "needs": "Rescue boats, food, blankets"
+    },
+    {
+      "location": "Superior, CO",
+      "type": "Fire",
+      "severity": 5,
+      "status": "Contained",
+      "needs": "Shelter, medical supplies"
+    },
+    {
+      "location": "Boulder, CO",
+      "type": "Flood",
+      "severity": 3,
+      "status": "Active",
+      "needs": "Sandbags, emergency personnel"
+    },
+    {
+      "location": "Lyons, CO",
+      "type": "Flood",
+      "severity": 5,
+      "status": "Active",
+      "needs": "Evacuation assistance, fresh water"
+    }
+  ]
+}

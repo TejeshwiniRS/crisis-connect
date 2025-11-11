@@ -1,0 +1,9 @@
+{
+  "name": "resourceplanner-adk",
+  "description": "Matches incident needs to NGOs and stores match records.",
+  "version": "1.0.0",
+  "capabilities": [
+    "plan_matches",
+    "plan_unmatched_incidents"
+  ]
+}

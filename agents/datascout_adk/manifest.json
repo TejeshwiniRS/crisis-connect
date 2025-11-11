@@ -1,0 +1,10 @@
+{
+  "name": "datascout-adk",
+  "description": "Extracts disaster info from text using Gemini, creates incidents, and dispatches to ResourcePlanner.",
+  "version": "1.0.0",
+  "capabilities": [
+    "summarize_text",
+    "ingest_from_transcripts",
+    "ingest_from_feed"
+  ]
+}

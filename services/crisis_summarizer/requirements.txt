@@ -1,7 +1,6 @@
 fastapi
 uvicorn
-jinja2
-httpx
+vertexai
 google-cloud-firestore
 google-cloud-storage
-python-multipart
+pydantic

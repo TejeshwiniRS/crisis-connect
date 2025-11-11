@@ -1,0 +1,6 @@
+{
+  "reports": [
+    {"location": "Denver, CO", "type": "Wildfire", "severity": 4, "status": "Active", "needs": "Medical supplies"},
+    {"location": "Austin, TX", "type": "Flood", "severity": 3, "status": "Stabilizing", "needs": "Food and shelter"}
+  ]
+}

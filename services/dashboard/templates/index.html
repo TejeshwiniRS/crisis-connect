@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Report New Incident</h2>
+<form action="/report-incident" method="post" class="mb-4">
+  <div class="mb-3">
+    <label class="form-label">Location</label>
+    <input type="text" name="location" class="form-control" placeholder="Denver, CO" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Summary</label>
+    <textarea name="summary" class="form-control" rows="2" placeholder="Short description..." required></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Needs (comma-separated)</label>
+    <input type="text" name="needs" class="form-control" placeholder="food, shelter, medical aid">
+  </div>
+  <button class="btn btn-success">Submit Incident</button>
+</form>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Dashboard Actions</h3>
+  <div>
+    <a href="/refresh" class="btn btn-outline-secondary me-2">🔄 Refresh</a>
+    <a href="/update-summary" class="btn btn-outline-info">🧠 Update Summary</a>
+  </div>
+</div>
+
+<h4>🧠 Crisis Overview</h4>
+{% if summary %}
+  <div class="card mb-4 p-3" style="white-space: pre-wrap;">
+    {{ summary|safe }}
+  </div>
+{% else %}
+  <p class="text-muted">No summary yet. Click “Update Summary” to generate one.</p>
+{% endif %}
+
+<h4>Latest Report (from ReportWriter job)</h4>
+{% if report.get('report_url') %}
+  <p><a href="{{ report['report_url'] }}" target="_blank">View Report</a></p>
+{% else %}
+  <p>No report generated yet by the background job.</p>
+{% endif %}
+
+<h4>Active Incidents & NGO Matches</h4>
+{% if matches %}
+<ul class="list-group mb-4">
+  {% for m in matches %}
+  <li class="list-group-item">
+    <b>{{ m['incident'].get('location', '?') }}</b> – {{ m['incident'].get('summary', '') }}
+    {% if m.get('ngos') %}
+      <br><small>Matched NGOs: {{ m['ngos'] | map(attribute='name', default='(unknown)') | join(', ') }}</small>
+    {% else %}
+      <br><small class="text-muted">No NGOs matched yet.</small>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">No active incidents yet.</p>
+{% endif %}
+
+{% endblock %}

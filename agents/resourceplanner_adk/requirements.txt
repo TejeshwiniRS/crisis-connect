@@ -1,4 +1,5 @@
 google-cloud-firestore
-adk
 fastapi
 uvicorn
+requests
+adk

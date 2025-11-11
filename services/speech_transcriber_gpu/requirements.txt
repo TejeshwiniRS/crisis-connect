@@ -3,3 +3,5 @@ google-cloud-firestore
 fastapi
 uvicorn
 ffmpeg-python
+torch
+numpy

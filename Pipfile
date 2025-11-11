@@ -4,16 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-email-validator = "*"
-adk = "*"
 jinja2 = "*"
 faster-whisper = "*"
+ffmpeg-python = "*"
+google-cloud-storage = "*"
+pydantic = "==2.7.1"
+google-cloud-aiplatform = "*"
+google-cloud-firestore = "*"
 fastapi = "*"
 uvicorn = "*"
-ffmpeg-python = "*"
-google-cloud-firestore = "*"
-google-cloud-storage = "*"
-google-cloud-aiplatform = "*"
+email-validator = "*"
+adk = "*"
+requests = "*"
 
 [dev-packages]
 
